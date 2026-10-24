@@ -71,17 +71,17 @@
 > **Theme:** Master your weapons before battle. Speed is everything in this exam.
 
 #### Goals
-- [ ] Set up a local practice cluster (minikube or kind)
-- [ ] Learn kubectl basics inside out
-- [ ] Get comfortable with vim for YAML editing
-- [ ] Understand k8s architecture conceptually
+- [x] Set up a local practice cluster (minikube or kind)
+- [x] Learn kubectl basics inside out
+- [x] Get comfortable with vim for YAML editing
+- [x] Understand k8s architecture conceptually
 
 #### K8s Architecture (Concepts to Understand)
-- [ ] Control Plane components: API Server, etcd, Scheduler, Controller Manager
-- [ ] Node components: kubelet, kube-proxy, container runtime
-- [ ] How a Pod is scheduled (API Server → etcd → Scheduler → kubelet)
-- [ ] Namespaces and resource isolation
-- [ ] RBAC overview (who can do what)
+- [x] Control Plane components: API Server, etcd, Scheduler, Controller Manager
+- [x] Node components: kubelet, kube-proxy, container runtime
+- [x] How a Pod is scheduled (API Server → etcd → Scheduler → kubelet)
+- [x] Namespaces and resource isolation
+- [x] RBAC overview (who can do what)
 
 #### kubectl Essentials
 
@@ -147,9 +147,9 @@ Key vim commands:
 | `V` then `>` or `<` | Indent/outdent selected lines |
 
 #### Daily Practice
-- [ ] Day 1–2: Set up cluster, explore `kubectl get/describe/logs`
-- [ ] Day 3–4: Practice vim with YAML files, get fast at editing
-- [ ] Day 5–7: Run through [k8s.io/docs — kubectl cheatsheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/)
+- [x] Day 1–2: Set up cluster, explore `kubectl get/describe/logs`
+- [x] Day 3–4: Practice vim with YAML files, get fast at editing
+- [x] Day 5–7: Run through [k8s.io/docs — kubectl cheatsheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/)
 
 ---
 
@@ -984,10 +984,10 @@ SPECIAL:
 ## Progress Tracker
 
 ### Week 1 — Tooling
-- [ ] Cluster setup (minikube/kind)
-- [ ] kubectl basics practiced daily
-- [ ] vim configured and practiced
-- [ ] K8s architecture understood
+- [x] Cluster setup (minikube/kind)
+- [x] kubectl basics practiced daily
+- [x] vim configured and practiced
+- [x] K8s architecture understood
 
 ### Week 2 — Application Design & Build
 - [ ] Multi-container pods (sidecar, init container)

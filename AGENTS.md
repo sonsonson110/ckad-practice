@@ -84,7 +84,7 @@ The full roadmap is in [`CKAD_ROADMAP.md`](./CKAD_ROADMAP.md).
 
 > Update this section as weeks are completed.
 
-- [ ] **Week 1** — kubectl fluency + vim + k8s architecture
+- [x] **Week 1** — kubectl fluency + vim + k8s architecture ✅ (Oct 2026)
 - [ ] **Week 2** — Application Design & Build
 - [ ] **Week 3** — Application Deployment
 - [ ] **Week 4** — Services & Networking
