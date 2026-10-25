@@ -1,0 +1,41 @@
+# Pod with PVC mount
+# Apply pvc-basic.yaml FIRST, then this file
+#
+# Apply order:
+#   k apply -f pvc-basic.yaml
+#   k get pvc                    # wait for STATUS=Bound
+#   k apply -f pod-with-pvc.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-with-pvc
+  labels:
+    app: storage-demo
+spec:
+  containers:
+  - name: app
+    image: nginx:1.21
+
+    # Mount the volume at /data inside the container
+    volumeMounts:
+    - name: data-volume     # must match the volume name below
+      mountPath: /data       # path inside container where storage is accessible
+
+    # Optionally, write to it to verify it works:
+    # k exec pod-with-pvc -- sh -c "echo hello > /data/test.txt"
+    # k exec pod-with-pvc -- cat /data/test.txt
+
+  volumes:
+  # Reference the PVC by its name — k8s binds to the underlying PV
+  - name: data-volume           # arbitrary name, must match volumeMounts.name
+    persistentVolumeClaim:
+      claimName: my-pvc         # must match the PVC metadata.name
+
+# Verify:
+#   k get pod pod-with-pvc
+#   k describe pod pod-with-pvc    # look for Volumes section
+#   k exec -it pod-with-pvc -- df -h /data   # see mounted storage
+#   k exec -it pod-with-pvc -- sh -c "echo 'persistent!' > /data/file.txt"
+#   k delete pod pod-with-pvc $now
+#   k apply -f pod-with-pvc.yaml
+#   k exec pod-with-pvc -- cat /data/file.txt   # data survives pod restart!

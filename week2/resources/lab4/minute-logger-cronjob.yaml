@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: minute-logger
+spec:
+  jobTemplate:
+    metadata:
+      name: minute-logger
+    spec:
+      completions: 5
+      parallelism: 3
+      template:
+        metadata: {}
+        spec:
+          containers:
+          - command:
+            - sh
+            - -c
+            - 'echo Job ran at: date'
+            image: busybox
+            name: minute-logger
+            resources: {}
+          restartPolicy: OnFailure
+  schedule: '* * * * *'
+status: {}

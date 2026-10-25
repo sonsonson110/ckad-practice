@@ -1,0 +1,30 @@
+# PersistentVolumeClaim (PVC)
+# A PVC is a pod's *request* for storage — it binds to a matching PV.
+# The cluster dynamically provisions a PV via a StorageClass (usually).
+#
+# You will NOT create PVs in the CKAD exam — just PVCs.
+# The PV/StorageClass already exists in the exam cluster.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: my-pvc
+spec:
+  # accessModes defines how the volume can be mounted:
+  #   ReadWriteOnce (RWO): one node can read+write (most common)
+  #   ReadOnlyMany  (ROX): many nodes read-only
+  #   ReadWriteMany (RWX): many nodes read+write (needs special storage driver)
+  accessModes:
+    - ReadWriteOnce
+
+  resources:
+    requests:
+      storage: 1Gi   # request 1 GiB of storage
+
+  # storageClassName: which storage class to use for dynamic provisioning
+  # Use "standard" for minikube/kind; check available ones with:
+  #   k get storageclass
+  storageClassName: standard
+
+# After applying:
+#   k get pvc          → should show STATUS=Bound
+#   k describe pvc my-pvc

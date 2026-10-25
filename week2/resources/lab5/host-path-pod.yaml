@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: hostpath-demo
+  name: hostpath-demo
+spec:
+  containers:
+  - args:
+    - sh
+    - -c
+    - echo "node file" > /node-data/test.txt && sleep 3600
+    image: busybox
+    name: hostpath-demo
+    resources: {}
+    volumeMounts:
+    - name: host-path-pvc
+      mountPath: /node-data
+  volumes:
+  - name: host-path-pvc 
+    hostPath: 
+      path: /tmp/ckad-test
+      type: DirectoryOrCreate
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}

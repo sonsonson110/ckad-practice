@@ -1,0 +1,47 @@
+# Sidecar Pattern
+# Use case: helper container that augments the main container
+# Both containers run simultaneously and share an emptyDir volume
+#
+# This example: main app writes logs to a shared volume,
+# sidecar reads and ships/displays them
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-sidecar
+  labels:
+    app: myapp
+spec:
+  containers:
+
+  # --- MAIN CONTAINER ---
+  # Simulates an app that writes logs to a shared volume
+  - name: app
+    image: busybox:1.35
+    command: ['sh', '-c',
+      'while true; do
+         echo "$(date) - log entry from app" >> /var/log/app/app.log;
+         sleep 5;
+       done']
+    volumeMounts:
+    - name: log-volume
+      mountPath: /var/log/app  # app writes logs here
+
+  # --- SIDECAR CONTAINER ---
+  # Reads from the same volume and ships/tails logs
+  # In a real scenario this would be Fluentd, Filebeat, etc.
+  - name: log-shipper
+    image: busybox:1.35
+    command: ['sh', '-c', 'tail -f /var/log/app/app.log']
+    volumeMounts:
+    - name: log-volume
+      mountPath: /var/log/app  # sidecar reads from same path
+
+  volumes:
+  # emptyDir: shared between containers in the pod, lost when pod is deleted
+  - name: log-volume
+    emptyDir: {}
+
+# To verify this works:
+#   k logs pod-sidecar -c log-shipper   # watch the sidecar reading logs
+#   k logs pod-sidecar -c app            # see the app container logs
+#   k exec -it pod-sidecar -c app -- cat /var/log/app/app.log

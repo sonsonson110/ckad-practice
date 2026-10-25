@@ -1,0 +1,44 @@
+# Init Container Pattern
+# Use case: wait for a dependency (DB, config service) before main app starts
+# Init containers MUST complete successfully (exit 0) before main container starts
+#
+# Quick generate skeleton:
+#   k run pod-init --image=nginx $do > pod-init-container.yaml
+#   then manually add initContainers section below
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-init-container
+spec:
+  # Init containers run sequentially BEFORE the main containers
+  # If any init container fails, the pod restarts (follows restartPolicy)
+  initContainers:
+  - name: init-wait-for-db
+    image: busybox:1.35
+    # Loop until the 'mydb' service is resolvable via DNS
+    # This blocks the main container from starting until DB is ready
+    command: ['sh', '-c',
+      'until nslookup mydb.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local;
+       do echo "waiting for mydb..."; sleep 2; done']
+
+  - name: init-copy-config
+    image: busybox:1.35
+    # Second init: write a config file to a shared emptyDir volume
+    command: ['sh', '-c', 'echo "app_env=prod" > /config/app.conf && echo "Config written"']
+    volumeMounts:
+    - name: config-vol
+      mountPath: /config   # init writes here
+
+  # Main container — only starts after ALL init containers finish
+  containers:
+  - name: app
+    image: nginx:1.21
+    volumeMounts:
+    - name: config-vol
+      mountPath: /etc/app-config  # main reads what init wrote
+
+  volumes:
+  # emptyDir: ephemeral volume, exists as long as the pod lives
+  # Shared between ALL containers (init and main) in this pod
+  - name: config-vol
+    emptyDir: {}

@@ -1,0 +1,45 @@
+# CronJob — Scheduled recurring task
+# Use case: periodic tasks (backups, reports, cleanup)
+# Syntax: minute hour day-of-month month day-of-week
+#
+# Quick generate:
+#   k create cronjob cronjob-basic --image=busybox --schedule="*/5 * * * *" $do \
+#     -- sh -c "echo hello at $(date)" > cronjob-basic.yaml
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cronjob-basic
+spec:
+  # Cron schedule — runs every 5 minutes
+  # Format: "minute hour day month weekday"
+  # Examples:
+  #   "*/5 * * * *"   → every 5 minutes
+  #   "0 * * * *"     → every hour at :00
+  #   "0 9 * * 1-5"   → weekdays at 9 AM
+  schedule: "*/5 * * * *"
+
+  # Keep last 3 successful job logs (pods)
+  successfulJobsHistoryLimit: 3
+  # Keep last 1 failed job for debugging
+  failedJobsHistoryLimit: 1
+
+  # What to do if previous job is still running when it's time to start again
+  # Allow (default) | Forbid | Replace
+  concurrencyPolicy: Forbid
+
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: reporter
+            image: busybox:1.35
+            command: ['sh', '-c', 'echo "CronJob ran at $(date)"']
+
+          restartPolicy: OnFailure
+
+# Useful commands:
+#   k get cronjobs
+#   k get jobs --watch          # watch jobs get created on schedule
+#   k get pods -l job-name=...  # find pods from a specific job run
+#   k delete cronjob cronjob-basic  # stop future runs

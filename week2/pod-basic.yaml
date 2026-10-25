@@ -1,0 +1,37 @@
+# Pod with environment variables and resource requests/limits
+# Practice: k run mypod --image=nginx $do > pod-basic.yaml, then add resources + env
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-basic
+  labels:
+    app: myapp
+spec:
+  containers:
+  - name: app
+    image: nginx:1.21
+
+    # Override the container's startup command (maps to ENTRYPOINT in Dockerfile)
+    # command: ["/bin/sh"]ll
+    # args: ["-c", "nginx -g 'daemon off;'"]
+
+    # Environment variables - hardcoded values
+    env:
+    - name: ENV_NAME
+      value: "production"
+    - name: APP_PORT
+      value: "8080"
+
+    # Resource requests (guaranteed) and limits (maximum)
+    # CPU: 1000m = 1 core | Memory: Mi = mebibytes
+    resources:
+      requests:
+        cpu: "100m"       # 0.1 CPU cores guaranteed
+        memory: "128Mi"   # 128 MiB guaranteed
+      limits:
+        cpu: "500m"       # 0.5 CPU cores max (throttled if exceeded)
+        memory: "256Mi"   # 256 MiB max (OOMKilled if exceeded!)
+
+    # Expose the port (informational only — doesn't actually open the port)
+    ports:
+    - containerPort: 80

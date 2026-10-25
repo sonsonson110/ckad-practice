@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: storage-writer
+  name: storage-writer
+spec:
+  containers:
+  - args:
+    - sh
+    - -c
+    - echo "hello from storage" > /data/message.txt && sleep 3600
+    image: busybox
+    name: storage-writer
+    resources: {}
+    volumeMounts:
+    - name: app-data-pvc
+      mountPath: /data
+  volumes: 
+  - name: app-data-pvc
+    persistentVolumeClaim:
+      claimName: app-data-pvc
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}

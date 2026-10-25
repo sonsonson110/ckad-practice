@@ -19,8 +19,14 @@
 
 ```
 ckad-practice/
-├── AGENTS.md          ← this file (session context)
-└── CKAD_ROADMAP.md    ← the main 8-week study plan (source of truth)
+├── AGENTS.md                  ← this file (session context)
+├── CKAD_ROADMAP.md            ← the main 8-week study plan (source of truth)
+└── weekN/
+    ├── labs/
+    │   ├── labXX-<topic>.md   ← lab instruction files
+    │   └── checks/
+    │       └── labXX-check.sh ← automated review + auto-cleanup scripts
+    └── resources/             ← user saves their YAML practice files here
 ```
 
 Add practice YAML files, notes, and exercises here as the study progresses.
@@ -74,6 +80,47 @@ The full roadmap is in [`CKAD_ROADMAP.md`](./CKAD_ROADMAP.md).
 - Name files descriptively: `pod-init-container.yaml`, `networkpolicy-deny-all.yaml`
 - Always include comments in practice YAML explaining what each section does
 
+### Lab Exercise Format (standard for all weeks)
+
+Use this structure when creating lab exercises for any week:
+
+#### Folder layout
+```
+weekN/
+├── labs/
+│   ├── lab01-<topic>.md        ← step-by-step instructions
+│   ├── lab02-<topic>.md
+│   └── checks/
+│       ├── lab01-check.sh      ← automated review script
+│       └── lab02-check.sh
+└── resources/                  ← user saves their own YAML files here
+```
+
+#### Lab instruction file (`labXX-<topic>.md`) must include
+- Frontmatter: topic, exam domain, estimated time, **namespace** (`ckad-labXX`), and check command
+- A `## 🎯 Objective` section with **all required resource names, images, config values, and constraints** stated explicitly — the user must be able to complete the lab using only this section
+- Tasks broken into lettered steps (A, B, C…) — **steps describe what to do, not how to do it** (no commands, YAML snippets, hints, or expected output in the task list)
+- A `## 🏁 Check your work` section at the bottom pointing to the check script
+- A `## 🧹 Manual Cleanup` section (for use only if the auto-check fails)
+
+#### Lab instruction file must NOT include
+- Hints, tips, or "key concepts" tables
+- Imperative commands or YAML answers inside the task steps
+- "Expected result" or "expected output" sections
+- Exam tips or explanatory notes within the lab body
+
+#### Review script (`labXX-check.sh`) must
+- Target one namespace: `NS="ckad-labXX"`
+- Define `pass()` / `fail()` / `info()` helpers with colour output
+- Run numbered checks with a specific `💡 Hint` on each failure
+- **Auto-delete the namespace** (`kubectl delete namespace $NS --force --grace-period=0`) only when ALL checks pass
+- Exit with code 1 if any check fails
+
+#### Namespace convention
+- Pattern: `ckad-labXX` (e.g. `ckad-lab01`, `ckad-lab02`)
+- **The user creates their own namespaces** — do NOT auto-create them in scripts or during setup
+- Remind the user to create namespaces before starting: `k create namespace ckad-labXX`
+
 ### Documentation References
 - Prefer linking to official k8s docs: `https://kubernetes.io/docs/`
 - For any CKAD topic, know the exact docs URL path (user practices navigating docs quickly)
@@ -85,7 +132,7 @@ The full roadmap is in [`CKAD_ROADMAP.md`](./CKAD_ROADMAP.md).
 > Update this section as weeks are completed.
 
 - [x] **Week 1** — kubectl fluency + vim + k8s architecture ✅ (Oct 2026)
-- [ ] **Week 2** — Application Design & Build
+- [x] **Week 2** — Application Design & Build ✅ (Oct 2026)
 - [ ] **Week 3** — Application Deployment
 - [ ] **Week 4** — Services & Networking
 - [ ] **Week 5** — Config, Security & Environment

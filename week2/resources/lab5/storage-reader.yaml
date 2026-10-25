@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: storage-reader
+  name: storage-reader
+spec:
+  containers:
+  - args:
+    - sh
+    - -c
+    - cat /data/message.txt
+    image: busybox
+    name: storage-reader
+    resources: {}
+    volumeMounts:
+    - name: app-data-pvc
+      mountPath: /data
+  volumes:
+  - name: app-data-pvc
+    persistentVolumeClaim:
+      claimName: app-data-pvc
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}

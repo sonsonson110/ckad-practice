@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: compute-pi
+spec:
+  completions: 3
+  parallelism: 2
+  backoffLimit: 2
+  activeDeadlineSeconds: 120
+  template:
+    metadata: {}
+    spec:
+      containers:
+      - command:
+        - sh
+        - -c
+        - echo 'Calculating...'; sleep 2; echo 'Done!'
+        image: busybox
+        name: compute-pi
+        resources: {}
+      restartPolicy: Never
+status: {}

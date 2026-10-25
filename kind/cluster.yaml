@@ -1,0 +1,18 @@
+# kind cluster configuration for CKAD practice
+# 1 control plane + 2 worker nodes
+# Usage: kind create cluster --name ckad --config kind/cluster.yaml
+
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+
+nodes:
+  # Control plane node
+  # Using v1.31.4 — stable, CKAD-compatible, well-tested with kind
+  - role: control-plane
+    image: kindest/node:v1.31.4
+
+  # Worker nodes
+  - role: worker
+    image: kindest/node:v1.31.4
+  - role: worker
+    image: kindest/node:v1.31.4

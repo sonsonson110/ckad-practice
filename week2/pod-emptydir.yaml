@@ -1,0 +1,50 @@
+# EmptyDir — shared ephemeral volume between containers in the same pod
+# Key properties:
+#   - Created when pod is assigned to a node
+#   - Deleted when the pod is removed
+#   - All containers in the pod share the same emptyDir
+#   - Survives container restarts (not pod deletion)
+#
+# Use cases: scratch space, sharing files between containers (sidecar/init patterns)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-emptydir
+spec:
+  initContainers:
+  # Init: write a file to the shared volume before main starts
+  - name: setup
+    image: busybox:1.35
+    command: ['sh', '-c', 'echo "data from init" > /shared/init.txt']
+    volumeMounts:
+    - name: shared-data
+      mountPath: /shared
+
+  containers:
+  # Main: reads file that init wrote
+  - name: reader
+    image: busybox:1.35
+    command: ['sh', '-c',
+      'echo "Reading init data:"; cat /shared/init.txt;
+       echo "Writing own data..."; echo "data from main" > /shared/main.txt;
+       sleep 3600']
+    volumeMounts:
+    - name: shared-data
+      mountPath: /shared
+
+  # Sidecar: monitors the shared volume
+  - name: watcher
+    image: busybox:1.35
+    command: ['sh', '-c', 'while true; do ls -la /shared/; sleep 10; done']
+    volumeMounts:
+    - name: shared-data
+      mountPath: /shared
+
+  volumes:
+  - name: shared-data
+    emptyDir: {}   # empty directory, created fresh for this pod
+
+# Verify:
+#   k exec pod-emptydir -c reader -- ls /shared
+#   k exec pod-emptydir -c watcher -- cat /shared/init.txt
+#   k logs pod-emptydir -c watcher

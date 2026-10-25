@@ -1,0 +1,37 @@
+# Job — Parallel completions
+# Use case: process a work queue, run multiple tasks in parallel
+#
+# completions: total number of successful pod completions needed
+# parallelism: how many pods run simultaneously
+#
+# This job needs 4 successful completions, running 2 at a time
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: job-parallel
+spec:
+  completions: 4    # run until 4 pods succeed
+  parallelism: 2    # run 2 pods at a time
+  backoffLimit: 6   # retry up to 6 times total on failure
+
+  template:
+    metadata:
+      labels:
+        app: parallel-job
+    spec:
+      containers:
+      - name: worker
+        image: busybox:1.35
+        # Simulate processing work — each pod does its chunk
+        command: ['sh', '-c', 'echo "Worker $(hostname) processing..."; sleep 3; echo "Done"']
+        resources:
+          requests:
+            cpu: "50m"
+            memory: "32Mi"
+
+      restartPolicy: OnFailure  # restart the container on failure, same pod
+
+# Useful commands after apply:
+#   k get jobs job-parallel -w    # watch status (watch completions field)
+#   k get pods -l app=parallel-job
+#   k describe job job-parallel   # see Pods Statuses section
